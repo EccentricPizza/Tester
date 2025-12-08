@@ -85,12 +85,18 @@
 </div>
 
 <script>
-// Pickup times for locations
-const times = {
-    "Permanent": generateTimes("16:00","21:00",10), // Thursday-Sunday
-    "Popup": generateTimes("16:00","20:30",10)
-};
+// Menu items and their prices
+const menuItems = [
+    { id: "margherita", name: "Margherita", price: 9 },
+    { id: "pepperoni", name: "Pepperoni", price: 10 },
+    { id: "fungi", name: "Fungi", price: 9.5 },
+    { id: "sweetChick", name: "A Sweet Chick", price: 10.5 },
+    { id: "hawaiian", name: "Hawaiian", price: 10.5 },
+    { id: "carni", name: "Carni", price: 12 },
+    { id: "garlicBread", name: "Garlic Bread", price: 8 }
+];
 
+// Timeslots generation (every 10 mins from 16:00-20:30, excluding 16:00 and 21:00)
 function generateTimes(start, end, intervalMinutes){
     let times = [];
     let [sh, sm] = start.split(":").map(Number);
@@ -98,77 +104,87 @@ function generateTimes(start, end, intervalMinutes){
     while(sh<eh || (sh===eh && sm<=em)){
         let h = sh.toString().padStart(2,'0');
         let m = sm.toString().padStart(2,'0');
-        times.push(`${h}:${m}`);
+        let currentTime = `${h}:${m}`;
+        if(currentTime !== "16:00" && currentTime !== "21:00") {
+            times.push(currentTime);
+        }
         sm += intervalMinutes;
         if(sm>=60){ sh++; sm-=60; }
     }
     return times;
 }
 
-function updateTimes(){
-    const loc = document.getElementById("location").value;
-    const timeSelect = document.getElementById("pickupTime");
-    timeSelect.innerHTML = "<option value=''>-- Select Time --</option>";
-    if(loc && times[loc]){
-        times[loc].forEach(t=>{
-            let opt = document.createElement("option");
-            opt.value = t; opt.textContent = t;
-            timeSelect.appendChild(opt);
-        });
-    }
+// Populate pickup times based on location
+const pickupTimes = generateTimes("16:00","20:30",10);
+const pickupSelect = document.getElementById("pickupTime");
+
+function updateTimes() {
+    pickupSelect.innerHTML = '<option value="">Select Time</option>'; // reset
+    pickupTimes.forEach(time => {
+        let opt = document.createElement("option");
+        opt.value = time;
+        opt.textContent = time;
+        pickupSelect.appendChild(opt);
+    });
 }
 
-// Orders array
+// Initialize times
+updateTimes();
+
+// Orders storage
 let orders = [];
 
+// Submit order
 document.getElementById("orderForm").addEventListener("submit", function(e){
     e.preventDefault();
-    const order = {
-        timestamp: new Date().toLocaleString(),
+
+    let order = {
         name: document.getElementById("name").value,
         phone: document.getElementById("phone").value,
-        email: document.getElementById("email").value,
+        date: document.getElementById("orderDate").value,
         location: document.getElementById("location").value,
-        pickupTime: document.getElementById("pickupTime").value,
-        items: [
-            {item:"Margherita", qty:document.getElementById("margherita").value},
-            {item:"Pepperoni", qty:document.getElementById("pepperoni").value},
-            {item:"Fungi", qty:document.getElementById("fungi").value},
-            {item:"A Sweet Chick", qty:document.getElementById("sweetchick").value},
-            {item:"Hawaiian", qty:document.getElementById("hawaiian").value},
-            {item:"Carni", qty:document.getElementById("carni").value},
-            {item:"Garlic Bread", qty:document.getElementById("garlicbread").value}
-        ].filter(i=>i.qty>0),
-        notes: document.getElementById("notes").value
+        time: pickupSelect.value,
+        items: menuItems.map(item => {
+            return { name: item.name, quantity: Number(document.getElementById(item.id).value), price: item.price };
+        }).filter(i => i.quantity > 0)
     };
+
+    if(!order.time || !order.date || !order.location || !order.items.length){
+        alert("Please fill out all required fields and select at least one item.");
+        return;
+    }
+
     orders.push(order);
-    updateAdminTable();
-    alert("Order submitted! Thank you.");
-    document.getElementById("orderForm").reset();
-    document.getElementById("pickupTime").innerHTML = "<option value=''>-- Select Time --</option>";
+    displayOrders();
+
+    // Remove chosen timeslot
+    let selectedIndex = pickupSelect.selectedIndex;
+    if(selectedIndex > 0){
+        pickupSelect.remove(selectedIndex);
+    }
+
+    this.reset();
 });
 
-function updateAdminTable(){
-    const tbody = document.querySelector("#adminTable tbody");
+// Display orders in admin table
+function displayOrders(){
+    const tbody = document.getElementById("adminTableBody");
     tbody.innerHTML = "";
-    // Sort by pickup time
-    const sorted = orders.sort((a,b)=>{
-        if(a.location===b.location) return a.pickupTime.localeCompare(b.pickupTime);
-        return a.location.localeCompare(b.location);
-    });
-    sorted.forEach(o=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${o.timestamp}</td>
-        <td>${o.name}</td>
-        <td>${o.phone}</td>
-        <td>${o.email}</td>
-        <td>${o.location}</td>
-        <td>${o.pickupTime}</td>
-        <td>${o.items.map(i=>i.item+" x"+i.qty).join(", ")}</td>
-        <td>${o.notes}</td>`;
-        tbody.appendChild(tr);
+    orders.forEach(o => {
+        let row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${o.name}</td>
+            <td>${o.phone}</td>
+            <td>${o.date}</td>
+            <td>${o.location}</td>
+            <td>${o.time}</td>
+            <td>${o.items.map(i => `${i.name} x${i.quantity}`).join(", ")}</td>
+        `;
+        tbody.appendChild(row);
     });
 }
 </script>
+
 </body>
 </html>
+
