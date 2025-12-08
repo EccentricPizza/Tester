@@ -3,89 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eccentric Pizza Pre-Order</title>
+<title>Eccentric Pizza Pre-Orders</title>
 <style>
-    body { font-family: Arial, sans-serif; background-color: #fff8f0; color: #4a0000; margin:0; padding:0; }
-    header { background-color: #4a0000; color: #fff8f0; padding: 1rem; text-align: center; }
-    h1 { margin:0; }
-    main { padding: 1rem; max-width: 600px; margin:auto; }
-    label { display:block; margin-top: 0.5rem; }
-    input, select, textarea { width: 100%; padding: 0.5rem; margin-top:0.2rem; }
-    button { background-color: #4a0000; color: #fff8f0; border: none; padding: 1rem; margin-top: 1rem; width: 100%; font-size: 1rem; cursor: pointer; }
-    button:hover { opacity:0.9; }
-    .section { margin-top: 2rem; padding: 1rem; background-color: #fff0e0; border-radius: 8px; }
-    .admin-section { margin-top:2rem; background-color:#ffe0e0; padding:1rem; border-radius:8px;}
-    table { width:100%; border-collapse: collapse; margin-top:1rem;}
-    th, td { border:1px solid #4a0000; padding:0.5rem; text-align:left; }
+    body { font-family: Arial, sans-serif; background-color: #fff8f0; color: #4a0000; padding: 20px; }
+    header { background-color: #4a0000; color: #fff8f0; padding: 10px; text-align: center; }
+    h1, h2 { margin: 10px 0; }
+    .section { margin-bottom: 20px; }
+    label { display: block; margin: 5px 0; }
+    input[type="number"], input[type="text"], input[type="date"], select { width: 100%; padding: 5px; margin-bottom: 10px; }
+    button { background-color: #4a0000; color: #fff8f0; padding: 10px 20px; border: none; cursor: pointer; }
+    button:hover { background-color: #a00000; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #4a0000; padding: 5px; text-align: left; }
 </style>
 </head>
 <body>
+
 <header>
     <h1>Eccentric Pizza Pre-Orders</h1>
 </header>
-<main>
-<form id="orderForm">
-    <div class="section">
-        <h2>Customer Info</h2>
+
+<div class="section">
+    <h2>Customer Info</h2>
+    <form id="orderForm">
         <label for="name">Name *</label>
         <input type="text" id="name" required>
+
         <label for="phone">Phone *</label>
         <input type="text" id="phone" required>
-        <label for="email">Email (optional)</label>
-        <input type="email" id="email">
-        <label for="notes">Special Notes</label>
-        <textarea id="notes" rows="2"></textarea>
-    </div>
 
-    <div class="section">
-        <h2>Pickup Location</h2>
-        <select id="location" required onchange="updateTimes()">
-            <option value="">-- Select Location --</option>
+        <label for="orderDate">Pickup Date *</label>
+        <input type="date" id="orderDate" required>
+
+        <label for="location">Pickup Location *</label>
+        <select id="location" required>
+            <option value="">Select Location</option>
             <option value="Permanent">Eccentric Limavady, Connell Street</option>
-            <option value="Popup">Pop-Up Event</option>
         </select>
-    </div>
+    </form>
+</div>
 
-    <div class="section">
-        <h2>Pickup Time</h2>
-        <select id="pickupTime" required></select>
-    </div>
+<div class="section">
+    <h2>Menu</h2>
+    <label>Margherita (£9) <input type="number" min="0" value="0" id="margherita"></label>
+    <label>Pepperoni (£10) <input type="number" min="0" value="0" id="pepperoni"></label>
+    <label>Fungi (£9.50) <input type="number" min="0" value="0" id="fungi"></label>
+    <label>A Sweet Chick (£10.50) <input type="number" min="0" value="0" id="sweetChick"></label>
+    <label>Hawaiian (£10.50) <input type="number" min="0" value="0" id="hawaiian"></label>
+    <label>Carni (£12) <input type="number" min="0" value="0" id="carni"></label>
+    <label>Garlic Bread (£8) <input type="number" min="0" value="0" id="garlicBread"></label>
+</div>
 
-    <div class="section">
-        <h2>Menu</h2>
-        <label>Margherita (£9) <input type="number" min="0" value="0" id="margherita"></label>
-        <label>Pepperoni (£10) <input type="number" min="0" value="0" id="pepperoni"></label>
-        <label>Fungi (£9.50) <input type="number" min="0" value="0" id="fungi"></label>
-        <label>A Sweet Chick (£10.50) <input type="number" min="0" value="0" id="sweetchick"></label>
-        <label>Hawaiian (£10.50) <input type="number" min="0" value="0" id="hawaiian"></label>
-        <label>Carni (£12) <input type="number" min="0" value="0" id="carni"></label>
-        <label>Garlic Bread (£8) <input type="number" min="0" value="0" id="garlicbread"></label>
-    </div>
+<div class="section">
+    <h2>Pickup Time *</h2>
+    <select id="pickupTime" required>
+        <option value="">Select Time</option>
+    </select>
+</div>
 
-    <button type="submit">Submit Order</button>
-</form>
+<button type="submit" form="orderForm">Submit Order</button>
 
-<div class="admin-section">
-    <h2>Admin Orders (Latest)</h2>
-    <table id="adminTable">
+<div class="section">
+    <h2>Admin Orders</h2>
+    <table>
         <thead>
             <tr>
-                <th>Timestamp</th>
                 <th>Name</th>
                 <th>Phone</th>
-                <th>Email</th>
+                <th>Date</th>
                 <th>Location</th>
-                <th>Pickup Time</th>
-                <th>Order</th>
-                <th>Notes</th>
+                <th>Time</th>
+                <th>Items</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="adminTableBody"></tbody>
     </table>
 </div>
 
 <script>
-// Menu items and their prices
+// Menu items and prices
 const menuItems = [
     { id: "margherita", name: "Margherita", price: 9 },
     { id: "pepperoni", name: "Pepperoni", price: 10 },
@@ -96,7 +92,7 @@ const menuItems = [
     { id: "garlicBread", name: "Garlic Bread", price: 8 }
 ];
 
-// Timeslots generation (every 10 mins from 16:00-20:30, excluding 16:00 and 21:00)
+// Generate timeslots (every 10 mins from 16:00-20:30, excluding 16:00 and 21:00)
 function generateTimes(start, end, intervalMinutes){
     let times = [];
     let [sh, sm] = start.split(":").map(Number);
@@ -114,12 +110,12 @@ function generateTimes(start, end, intervalMinutes){
     return times;
 }
 
-// Populate pickup times based on location
 const pickupTimes = generateTimes("16:00","20:30",10);
 const pickupSelect = document.getElementById("pickupTime");
 
-function updateTimes() {
-    pickupSelect.innerHTML = '<option value="">Select Time</option>'; // reset
+// Populate times
+function updateTimes(){
+    pickupSelect.innerHTML = '<option value="">Select Time</option>';
     pickupTimes.forEach(time => {
         let opt = document.createElement("option");
         opt.value = time;
@@ -127,11 +123,8 @@ function updateTimes() {
         pickupSelect.appendChild(opt);
     });
 }
-
-// Initialize times
 updateTimes();
 
-// Orders storage
 let orders = [];
 
 // Submit order
@@ -144,9 +137,11 @@ document.getElementById("orderForm").addEventListener("submit", function(e){
         date: document.getElementById("orderDate").value,
         location: document.getElementById("location").value,
         time: pickupSelect.value,
-        items: menuItems.map(item => {
-            return { name: item.name, quantity: Number(document.getElementById(item.id).value), price: item.price };
-        }).filter(i => i.quantity > 0)
+        items: menuItems.map(item => ({
+            name: item.name,
+            quantity: Number(document.getElementById(item.id).value),
+            price: item.price
+        })).filter(i => i.quantity > 0)
     };
 
     if(!order.time || !order.date || !order.location || !order.items.length){
@@ -157,7 +152,7 @@ document.getElementById("orderForm").addEventListener("submit", function(e){
     orders.push(order);
     displayOrders();
 
-    // Remove chosen timeslot
+    // Remove selected timeslot
     let selectedIndex = pickupSelect.selectedIndex;
     if(selectedIndex > 0){
         pickupSelect.remove(selectedIndex);
@@ -187,4 +182,3 @@ function displayOrders(){
 
 </body>
 </html>
-
